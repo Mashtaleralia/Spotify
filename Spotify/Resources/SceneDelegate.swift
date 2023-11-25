@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
         let window = UIWindow(windowScene: scene)
         if AuthManager.shared.isSignedIn {
+            AuthManager.shared.refreshAccessToken(completion: nil)
             window.rootViewController = TabBarController()
         } else {
             let navVC = UINavigationController(rootViewController: WelcomeViewController())
@@ -28,9 +29,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.rootViewController = navVC
                                                
         }
-       
+        
         window.makeKeyAndVisible()
+        
         self.window = window
+        
+//        AuthManager.shared.refreshAccessToken { success in
+//            print(success)
+//        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
