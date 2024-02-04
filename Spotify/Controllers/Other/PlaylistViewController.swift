@@ -38,6 +38,8 @@ class PlaylistViewController: UIViewController {
     
     private var viewModels = [RecommendedTrackCellViewModel]()
     
+    private var tracks = [AudioTrack]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = playlist.name
@@ -51,6 +53,9 @@ class PlaylistViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let model):
+                    self?.tracks = model.tracks.items.compactMap({
+                        $0.track
+                    })
                     self?.viewModels = model.tracks.items.compactMap({
                         return RecommendedTrackCellViewModel(name: $0.track?.name ?? "", artistName: $0.track?.artists.first?.name ?? "-", artworkURL: URL(string: $0.track?.album?.images.first?.url ?? ""))
                     })
@@ -117,9 +122,6 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
                 
     }
     
-
-    
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecommendedTrackCollectionViewCell.identifier, for: indexPath) as? RecommendedTrackCollectionViewCell else {
             fatalError()
@@ -130,6 +132,10 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let index = indexPath.row
+        let track = tracks[index]
+        PlaybackPresenter.shared.startPlayback(from: self, track: track)
     }
       
 }
@@ -137,7 +143,7 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
 extension PlaylistViewController: PlaylistHeaderCollectionReusableViewDelegate {
     
     func playlistHeaderCollectionReusableViewPlayAll(_ header: PlaylistHeaderCollectionReusableView) {
-        print("playing all")
+        PlaybackPresenter.shared.startPlayback(from: self, tracks: tracks)
     }
     
     
