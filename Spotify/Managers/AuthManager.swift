@@ -18,7 +18,7 @@ final class AuthManager {
         static let clientSecret = "2fc5d43a1f7a46cdb81786c5bd40e668"
         static let tokenAPIURL = "https://accounts.spotify.com/api/token"
         static let redirectURI = "https://developer.apple.com/documentation"
-        static let scopes = "user-read-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-private%20user-follow-read%20user-library-modify"
+        static let scopes = "user-read-private%20playlist-modify-public%20playlist-read-private%20playlist-modify-public%20user-follow-read%20user-library-modify"
     }
     
     private init() {}
@@ -184,6 +184,17 @@ final class AuthManager {
         }
         
         UserDefaults.standard.setValue(Date().addingTimeInterval(TimeInterval(result.expires_in)), forKey: "expirationDate")
+    }
+    
+    public func signOut(completion: (Bool) -> Void) {
+        
+        UserDefaults.standard.setValue(nil,
+                                       forKey: "access_token")
+        UserDefaults.standard.setValue(nil,
+                                       forKey: "refresh_token")
+        UserDefaults.standard.setValue(nil,
+                                       forKey: "expirationDate")
+        completion(true)
     }
 
 }
